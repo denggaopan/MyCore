@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using MyCore.Repositories;
 using Swashbuckle.AspNetCore;
 using Swashbuckle.AspNetCore.Swagger;
+using AutoMapper;
+using MyCore.Api.Dtos.Language;
 
 namespace MyCore.Api
 {
@@ -48,6 +50,15 @@ namespace MyCore.Api
                 });
             });
             #endregion
+
+            #region AutoMapper
+            Mapper.Initialize(config=>
+            {
+                config.CreateMap<Language, LanguageDto>();
+                config.CreateMap<LanguageCreationDto, Language>();
+            });
+            #endregion
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //数据库连接

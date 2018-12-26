@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyCore.Api.Dtos.Language;
@@ -34,8 +35,9 @@ namespace MyCore.Api.Controllers
             {
                 q = q.Where(a=>a.Key.Contains(keyword) || a.Value.Contains(keyword));
             }
-            var result = q.OrderBy(a => a.Key).Skip((page - 1) * limit).Take(limit).ToList();
-            return Ok(result);
+            q = q.OrderBy(a => a.Key).Skip((page - 1) * limit).Take(limit);
+            var list = q.Select(a=>Mapper.Map<LanguageDto>(a));
+            return Ok(list);
         }
         #endregion
 
@@ -48,8 +50,8 @@ namespace MyCore.Api.Controllers
             {
                 return BadRequest("不存在");
             }
-
-            return Ok(model);
+            var dto = Mapper.Map<LanguageDto>(model);
+            return Ok(dto);
         }
         #endregion
 
@@ -63,12 +65,8 @@ namespace MyCore.Api.Controllers
                 return BadRequest("已存在");
             }
 
-            var model = new Language()
-            {
-                Key = dto.Key,
-                Value = dto.Value,
-                CreatedTime = DateTime.Now
-            };
+            var model = Mapper.Map<Language>(dto);
+            model.CreatedTime = DateTime.Now;
             _uow.Repository<Language>().Add(model);
             _uow.SaveChanges();
             return Ok();
